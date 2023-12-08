@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809696400825",
+    "project_id": "loan-management-d2dd0",
+    "storage_bucket": "loan-management-d2dd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809696400825:android:0bbda5105c8e429348d268",
+        "android_client_info": {
+          "package_name": "com.example.lending_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWbXb4GavUugybUgAjLHZ_tgqV360hIQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
