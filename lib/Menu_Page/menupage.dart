@@ -33,7 +33,7 @@ class MenuPage extends StatelessWidget {
               SizedBox(
                   //SPACING
                   height: 20,
-                ),
+              ),
               MenuButton(text: 'Add', nextPage: '/addPage'),
             ],
           ),

@@ -34,7 +34,7 @@ class _MenuButtonState extends State<MenuButton> {
       child: GestureDetector(
         onTap: (){
           //WHERE TO GO
-          Navigator.of(context).pushReplacementNamed(widget.nextPage);
+          Navigator.of(context).pushNamed(widget.nextPage);
         },
         onTapDown: (_) => setState(() => _isPressed = true),
         onTapUp: (_) => setState(() => _isPressed = false),
