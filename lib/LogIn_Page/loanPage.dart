@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lending_management/LogIn_Page/text_field.dart';
-import 'package:lending_management/Menu_Page/menupage.dart';
 
 class LoanPage extends StatefulWidget {
   const LoanPage({super.key});
@@ -44,7 +43,6 @@ class _LoanPageState extends State<LoanPage> {
                   ),
                 ),
                 const SizedBox(
-                  //Sa SizedBox ang e butang mga fields
                   height: 35,
                 ),
                 //UserName Field
@@ -55,7 +53,6 @@ class _LoanPageState extends State<LoanPage> {
 
                 const SizedBox(
                   //SPACING
-                  //Sa SizedBox ang e butang mga fields
                   height: 20,
                 ),
                 //Password Field
@@ -68,7 +65,6 @@ class _LoanPageState extends State<LoanPage> {
 
                 const SizedBox(
                   //SPACING
-                  //Sa SizedBox ang e butang mga fields
                   height: 20,
                 ),
 
@@ -85,7 +81,7 @@ class _LoanPageState extends State<LoanPage> {
                       : SystemMouseCursors.basic,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushReplacementNamed('/menuPage');
+                      Navigator.of(context).pushReplacementNamed('/menuPage');//
                     },
                     onTapDown: (_) => setState(() => _isPressed = true),
                     onTapUp: (_) => setState(() => _isPressed = false),
@@ -99,9 +95,9 @@ class _LoanPageState extends State<LoanPage> {
                       width: _isHovered ? 200 : 140,
                       alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      duration: const Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 100),
                       child: const Text(
-                        'LogIn',
+                        'LogIn',//
                         style: TextStyle(
                           color: Colors.white,
                         ),
