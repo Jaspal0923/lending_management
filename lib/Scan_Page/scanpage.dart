@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
@@ -10,67 +9,49 @@ class ScanPage extends StatefulWidget {
 }
 
 class _ScanPageState extends State<ScanPage> {
-  //================================================
-  final qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
-  Barcode? barcode;
-  //================================================
+  final GlobalKey _qrKey = GlobalKey(debugLabel: 'QR');
 
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  void reassemble() async {
-    super.reassemble();
-    if (Platform.isAndroid || Platform.isIOS || Platform.isWindows) {
-      await controller!.pauseCamera();
-    }
-    controller!.resumeCamera();
-  }
+  QRViewController? _controller;
+  String _qrText = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            buildQrView(context),
-            Positioned(
-              bottom: 10,
-              child: buildResult(),
-            )
-          ],
-        ));
+      appBar: AppBar(
+        title: Text('QR Code Scanner'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 5,
+            child: QRView(
+              key: _qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text('Scanned QR Code: $_qrText'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget buildResult() => Text(
-        barcode != null ? 'Result : ${barcode!.code}' : 'Scan a Code!',
-        maxLines: 3,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      );
-  Widget buildQrView(BuildContext context) => QRView(
-        key: qrKey,
-        onQRViewCreated: onQRViewCreated,
-        overlay: QrScannerOverlayShape(
-          borderLength: 20,
-          borderWidth: 10,
-          borderRadius: 10,
-          cutOutSize: MediaQuery.of(context).size.width * 0.8,
-        ),
-      );
+  void _onQRViewCreated(QRViewController controller) {
+    this._controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      setState(() {
+        _qrText = scanData as String;
+      });
+    });
+  }
 
-  void onQRViewCreated(QRViewController controller) {
-    setState(() => this.controller = controller);
-
-    controller.scannedDataStream.listen(
-      (barcode) => setState(() => this.barcode = barcode),
-      onError: (e) => print("Error scanning: $e"),
-    );
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
   }
 }
