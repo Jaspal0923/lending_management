@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lending_management/Add_Page/addPage.dart';
+import 'package:lending_management/Auth/auth_page.dart';
 import 'package:lending_management/LogIn_Page/loanPage.dart';
 import 'package:lending_management/Menu_Page/menupage.dart';
 import 'package:lending_management/firebase_options.dart';
@@ -26,9 +27,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/menuPage': (context) => const MenuPage(),
         '/loginPage': (context) => const LoanPage(),
-        '/addPage' : (context) => const AddPage(),
+        '/addPage': (context) => const AddPage(),
       },
-      home: const LoanPage(),
+      home: const AuthPage(),
       debugShowCheckedModeBanner: false,
     );
   }

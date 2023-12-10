@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lending_management/LogIn_Page/text_field.dart';
 
@@ -18,6 +19,18 @@ class _LoanPageState extends State<LoanPage> {
     super.dispose();
     _userController.dispose();
     _passwordController.dispose();
+  }
+
+  void signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _userController.text,
+        password: _passwordController.text,
+      );
+    } catch (e) {
+      // Handle the error, e.g., show an error message
+      debugPrint('Error signing in: $e');
+    }
   }
 
   @override
@@ -49,7 +62,7 @@ class _LoanPageState extends State<LoanPage> {
                 TextField_LogIn(
                     textEditingController: _userController,
                     hintText: 'Enter Username',
-                    textInputType: TextInputType.text),
+                    textInputType: TextInputType.emailAddress),
 
                 const SizedBox(
                   //SPACING
@@ -81,7 +94,7 @@ class _LoanPageState extends State<LoanPage> {
                       : SystemMouseCursors.basic,
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushReplacementNamed('/menuPage');//
+                      signIn();
                     },
                     onTapDown: (_) => setState(() => _isPressed = true),
                     onTapUp: (_) => setState(() => _isPressed = false),
@@ -97,7 +110,7 @@ class _LoanPageState extends State<LoanPage> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       duration: const Duration(milliseconds: 100),
                       child: const Text(
-                        'LogIn',//
+                        'LogIn', //
                         style: TextStyle(
                           color: Colors.white,
                         ),

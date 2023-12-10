@@ -14,6 +14,8 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController _BDate = TextEditingController();
   final TextEditingController _Address = TextEditingController();
   final TextEditingController _PhoneNo = TextEditingController();
+  final TextEditingController _loanAmt = TextEditingController();
+  final TextEditingController _loanPercent = TextEditingController();
 
   void dispose() {
     super.dispose();
@@ -21,7 +23,14 @@ class _AddPageState extends State<AddPage> {
     _BDate.dispose();
     _Address.dispose();
     _PhoneNo.dispose();
+    _loanAmt.dispose();
+    _loanPercent.dispose();
   }
+
+  bool _isHovered = true;
+  bool _isPressed = false;
+
+  var formkey = GlobalKey<FormState>();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -42,147 +51,256 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: SafeArea(
-        child: Container(
+      body: ListView(children: [
+        Container(
           padding: EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-
-              // IMAGE CONTAINER
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.amber,
-                ),
-                width: double.infinity,
-                height: 150,
-                child: const Center(child: Text('INSERT IMAGE')),
-              ),
-
-              //====================================================================== USER'S DETAIL
-
-              // USER'S DETAIL
-              const SizedBox(
-                // SPACING
-                height: 20,
-              ),
-
-              const Text(
-                "USER'S DETAIL",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
-                ),
-              ),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-              // USERS INPUT FIELD
-              addTextField(controller: _Name, hint: "Enter Name", tit: TextInputType.text, cap: 'NAME:'),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-
-              // BDATE TEXTFIELD
-              GestureDetector(
-                onTap: () => _selectDate(context),
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(5),
+          child: Form(
+            key: formkey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // IMAGE CONTAINER
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.amber,
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Date of Birth:',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      Text(
-                        _BDate.text.isEmpty ? 'Select Date' : _BDate.text,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
+                  width: double.infinity,
+                  height: 150,
+                  child: const Center(child: Text('INSERT IMAGE')),
+                ),
+
+                //====================================================================== USER'S DETAIL
+
+                // USER'S DETAIL
+                const SizedBox(
+                  // SPACING
+                  height: 20,
+                ),
+
+                const Text(
+                  "USER'S DETAIL",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
                   ),
                 ),
-              ),
-              
-              //====================================================================== USER'S CONTACT
-
-              //LINE 
-              const SizedBox(
-                // SPACING
-                height: 12.5,
-              ),
-              const Divider(
-                color: Colors.black,
-              ),
-              const SizedBox(
-                // SPACING
-                height: 12.5,
-              ),
-
-              // USER'S CONTACT
-              const Text(
-                "USER'S CONTACT",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
+                const SizedBox(
+                  // SPACING
+                  height: 15,
                 ),
-              ),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-
-               // ADDRESS TEXT FIELD
-              addTextField(controller: _Address, hint: "Enter Address", tit: TextInputType.streetAddress, cap: 'Address:'),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-
-              //PHONE NO TEXT FIELD
-              addTextField(controller: _PhoneNo, hint: "Enter Phone Number", tit: TextInputType.phone, cap: 'Phone No.:'),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-
-              //====================================================================== LOAN DETAILS
-
-              //LINE 
-              const SizedBox(
-                // SPACING
-                height: 12.5,
-              ),
-              const Divider(
-                color: Colors.black,
-              ),
-              const SizedBox(
-                // SPACING
-                height: 12.5,
-              ),
-              
-              // LOAN DETAILS
-              const Text(
-                "LOAN DETAILS",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 17,
+                // USERS INPUT FIELD
+                addTextField(
+                    controller: _Name,
+                    hint: "Enter Name",
+                    tit: TextInputType.text,
+                    cap: 'Name:'),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
                 ),
-              ),
-              const SizedBox(
-                // SPACING
-                height: 15,
-              ),
-            ],
+
+                // BDATE TEXTFIELD
+                GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Date of Birth:',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          _BDate.text.isEmpty ? 'Select Date' : _BDate.text,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                //====================================================================== USER'S CONTACT
+
+                //LINE
+                const SizedBox(
+                  // SPACING
+                  height: 12.5,
+                ),
+                const Divider(
+                  color: Colors.black,
+                ),
+                const SizedBox(
+                  // SPACING
+                  height: 12.5,
+                ),
+
+                // USER'S CONTACT
+                const Text(
+                  "USER'S CONTACT",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
+                ),
+
+                // ADDRESS TEXT FIELD
+                addTextField(
+                    controller: _Address,
+                    hint: "Enter Address",
+                    tit: TextInputType.streetAddress,
+                    cap: 'Address:'),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
+                ),
+
+                //PHONE NO TEXT FIELD
+                addTextField(
+                    controller: _PhoneNo,
+                    hint: "Enter Phone Number",
+                    tit: TextInputType.phone,
+                    cap: 'Phone No.:'),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
+                ),
+
+                //====================================================================== LOAN DETAILS
+
+                //LINE
+                const SizedBox(
+                  // SPACING
+                  height: 12.5,
+                ),
+                const Divider(
+                  color: Colors.black,
+                ),
+                const SizedBox(
+                  // SPACING
+                  height: 12.5,
+                ),
+
+                // LOAN DETAILS
+                const Text(
+                  "LOAN DETAILS",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
+                ),
+
+                //LOAN AMOUNT TEXT FIELD
+                addTextField(
+                    controller: _loanAmt,
+                    hint: "Enter Amount",
+                    tit: TextInputType.number,
+                    cap: 'Loan Amount:'),
+                const SizedBox(
+                  // SPACING
+                  height: 15,
+                ),
+
+                //PERCENT TEXT FIELD
+                addTextField(
+                    controller: _loanPercent,
+                    hint: "Enter Percentage",
+                    tit: TextInputType.number,
+                    cap: 'Interest Rate:'),
+                const SizedBox(
+                  // SPACING
+                  height: 25,
+                ),
+
+                //SUBMIT BUTTON
+                MouseRegion(
+                  onEnter: (_) {
+                    setState(() => _isHovered = true);
+                  },
+                  onExit: (_) {
+                    setState(() => _isHovered = false);
+                  },
+                  cursor: _isHovered
+                      ? SystemMouseCursors.click
+                      : SystemMouseCursors.basic,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (formkey.currentState!.validate()) {
+//==================== SHOW DIALOG FOR CONFIRMATION
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                              'Confirmation',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Container(
+                              height: 200,
+                              width: 400,
+                              child: Column(
+                                children: [
+                                  Text('LOAN AMOUNT: ${_loanAmt.text}\n'),
+                                  Text('INTEREST RATE: ${_loanPercent.text}\n'),
+
+                                  //===CALCULATION FOR TOTAL BALACNE===
+
+                                  Text(
+                                      'TOTAL AMOUNT: ${((double.parse(_loanPercent.text) / 100) * double.parse(_loanAmt.text)) + double.parse(_loanAmt.text)}'),
+
+                                  //
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              //=================== CONFIMRATION BUTTON
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                    onTapDown: (_) => setState(() => _isPressed = true),
+                    onTapUp: (_) => setState(() => _isPressed = false),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: _isPressed
+                            ? Colors.lightBlueAccent.withOpacity(0.9)
+                            : Colors.blueAccent,
+                      ),
+                      width: double.infinity,
+                      height: 60,
+                      child: const Center(
+                        child: Text(
+                          'Submit',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                //======================================================================
+              ],
+            ),
           ),
         ),
-      ),
+      ]),
     );
   }
 }
