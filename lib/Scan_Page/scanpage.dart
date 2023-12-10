@@ -1,9 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-//test
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
 
@@ -29,7 +27,7 @@ class _ScanPageState extends State<ScanPage> {
     super.reassemble();
     if (Platform.isAndroid) {
       controller?.pauseCamera();
-    } else if (Platform.isIOS) {
+    } else {
       controller?.resumeCamera();
     }
   }
@@ -53,8 +51,7 @@ class _ScanPageState extends State<ScanPage> {
             flex: 1,
             child: Center(
               child: (_qrText != null)
-                  ? Text(
-                      'Barcode Type: ${_qrText?.code}')
+                  ? Text('Barcode Type: ${_qrText?.code}')
                   : Text('Scan a code'),
             ),
           ),
@@ -68,10 +65,32 @@ class _ScanPageState extends State<ScanPage> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         _qrText = scanData;
+        // Show a dialog when a QR code is scanned
+        _showQRDialog(scanData.code!);
       });
     });
     controller.pauseCamera();
     controller.resumeCamera();
+  }
+
+  void _showQRDialog(String data) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('QR Code Scanned'),
+          content: Text('Data: $data'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
