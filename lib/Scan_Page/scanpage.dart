@@ -18,7 +18,7 @@ class _ScanPageState extends State<ScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Code Scanner'),
+        title: const Text('QR Code Scanner'),
       ),
       body: Column(
         children: [
@@ -41,7 +41,7 @@ class _ScanPageState extends State<ScanPage> {
   }
 
   void _onQRViewCreated(QRViewController controller) {
-    this._controller = controller;
+    _controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         _qrText = scanData as String;
