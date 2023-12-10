@@ -13,27 +13,29 @@ class MenuPage extends StatelessWidget {
         title: const Text('Hello'),
       ),
       drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text('Logout'),
-              onTap: (){
-                FirebaseAuth.instance.signOut();
-              },
-            )
-          ],
-        )
-      ),
+          child: ListView(
+        children: [
+          ListTile(
+            title: const Text('Logout'),
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+            },
+          )
+        ],
+      )),
       body: const Center(
         child: FittedBox(
           fit: BoxFit.contain,
           child: Column(
             children: [
               //Buttons
-              MenuButton(text: 'Scan', nextPage: '',),
+              MenuButton(
+                text: 'Scan',
+                nextPage: '/scanPage',
+              ),
               SizedBox(
-                  //SPACING
-                  height: 20,
+                //SPACING
+                height: 20,
               ),
               MenuButton(text: 'Add', nextPage: '/addPage'),
             ],

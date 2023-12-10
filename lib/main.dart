@@ -4,6 +4,7 @@ import 'package:lending_management/Add_Page/addPage.dart';
 import 'package:lending_management/Auth/auth_page.dart';
 import 'package:lending_management/LogIn_Page/loanPage.dart';
 import 'package:lending_management/Menu_Page/menupage.dart';
+import 'package:lending_management/Scan_Page/scanpage.dart';
 import 'package:lending_management/firebase_options.dart';
 
 void main() async {
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/menuPage': (context) => const MenuPage(),
         '/loginPage': (context) => const LoanPage(),
         '/addPage': (context) => const AddPage(),
+        '/scanPage': (context) => const ScanPage(),
       },
       home: const AuthPage(),
       debugShowCheckedModeBanner: false,
