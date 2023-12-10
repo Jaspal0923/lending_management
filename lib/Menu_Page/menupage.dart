@@ -1,3 +1,4 @@
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:lending_management/Menu_Page/menuButton.dart";
 
@@ -17,7 +18,7 @@ class MenuPage extends StatelessWidget {
             ListTile(
               title: const Text('Logout'),
               onTap: (){
-                Navigator.of(context).pushReplacementNamed('/loginPage');
+                FirebaseAuth.instance.signOut();
               },
             )
           ],

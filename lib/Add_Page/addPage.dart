@@ -32,6 +32,16 @@ class _AddPageState extends State<AddPage> {
 
   var formkey = GlobalKey<FormState>();
 
+  //========================================== METHODS
+  bool isNumber(String text){
+    try{
+      double.parse(text);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -238,39 +248,51 @@ class _AddPageState extends State<AddPage> {
                   child: GestureDetector(
                     onTap: () {
                       if (formkey.currentState!.validate()) {
-//==================== SHOW DIALOG FOR CONFIRMATION
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text(
-                              'Confirmation',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+
+                        if(isNumber(_loanAmt.text) && isNumber(_loanPercent.text)){
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text(
+                                'Confirmation',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            content: Container(
-                              height: 200,
-                              width: 400,
-                              child: Column(
-                                children: [
-                                  Text('LOAN AMOUNT: ${_loanAmt.text}\n'),
-                                  Text('INTEREST RATE: ${_loanPercent.text}\n'),
+                              content: SizedBox(
+                                height: 150,
+                                width: 400,
+                                child: Column(
+                                  children: [
+                                    
+                                    Text('LOAN AMOUNT: ${_loanAmt.text}\n'),
+                                    Text('INTEREST RATE: ${_loanPercent.text}\n'),
 
-                                  //===CALCULATION FOR TOTAL BALACNE===
+                                    //===CALCULATION FOR TOTAL BALACNE===
 
-                                  Text(
-                                      'TOTAL AMOUNT: ${((double.parse(_loanPercent.text) / 100) * double.parse(_loanAmt.text)) + double.parse(_loanAmt.text)}'),
+                                    Text(
+                                        'TOTAL AMOUNT: ${((double.parse(_loanPercent.text) / 100) * double.parse(_loanAmt.text)) + double.parse(_loanAmt.text)}'),
 
-                                  //
-                                ],
+                                    //
+                                  ],
+                                ),
                               ),
+                              actions: const [
+                                //=================== CONFIMRATION BUTTON
+                              ],
                             ),
-                            actions: [
-                              //=================== CONFIMRATION BUTTON
-                            ],
-                          ),
-                        );
+                          );
+                        }else{
+                          showDialog(
+                            context: context, 
+                            builder: (context)=>const AlertDialog(
+                              title: Center(child: Text('Loan Amount and Interest Must be a number')),
+                            )
+                          );
+                        }
+                          //==================== SHOW DIALOG FOR CONFIRMATION
+                          
                       }
                     },
                     onTapDown: (_) => setState(() => _isPressed = true),

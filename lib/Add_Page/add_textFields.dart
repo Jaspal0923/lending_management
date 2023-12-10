@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lending_management/LogIn_Page/text_field.dart';
 
 class addTextField extends StatelessWidget {
   const addTextField(
@@ -31,6 +30,7 @@ class addTextField extends StatelessWidget {
         if (text == null || text.isEmpty) {
           return 'This Field Should Not Be Empty';
         }
+        return null;
       },
     );
   }
