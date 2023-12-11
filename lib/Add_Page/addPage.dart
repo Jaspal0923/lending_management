@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lending_management/Add_Page/add_textFields.dart';
@@ -30,6 +35,10 @@ class _AddPageState extends State<AddPage> {
 
   bool _isHovered = true;
   bool _isPressed = false;
+  XFile? file;
+  String imageUrl='';
+  bool pic = true;
+  double? _totalAmt;
 
   var formkey = GlobalKey<FormState>();
 
@@ -71,14 +80,18 @@ class _AddPageState extends State<AddPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // IMAGE CONTAINER
-                GestureDetector(
-                  onTap: () {
+                GestureDetector (
+                  onTap: () async{
                     ImagePicker imagePicker = ImagePicker();
-                    imagePicker.pickImage(source: ImageSource.gallery);
+                    file = await imagePicker.pickImage(source: ImageSource.camera);
+                    setState(() {
+                      pic=false;
+                    });
+
                   },
                   child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.amber,
+                    decoration: BoxDecoration(
+                      color:  pic ? Colors.amber : Colors.lightGreenAccent,
                     ),
                     width: double.infinity,
                     height: 150,
@@ -263,9 +276,26 @@ class _AddPageState extends State<AddPage> {
                       : SystemMouseCursors.basic,
                   child: GestureDetector(
                     onTap: () {
-                      if (formkey.currentState!.validate()) {
+                      if(file==null){
+                        showDialog(
+                          context: context, 
+                          builder: (context) => const AlertDialog(
+                            title: Text('Please Insert Image'),
+                          )
+                        );
+                      }
+                      else if(_BDate.text.isEmpty){
+                        showDialog(
+                          context: context, 
+                          builder: (context) => const AlertDialog(
+                            title: Text('Please Input BDate'),
+                          )
+                        );
+                      }
+                      else if (formkey.currentState!.validate()) {
                         if (isNumber(_loanAmt.text) &&
                             isNumber(_loanPercent.text)) {
+                              _totalAmt = ((double.parse(_loanPercent.text) / 100) * double.parse(_loanAmt.text)) + double.parse(_loanAmt.text);
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -286,16 +316,74 @@ class _AddPageState extends State<AddPage> {
                                         'INTEREST RATE: ${_loanPercent.text}\n'),
 
                                     //===CALCULATION FOR TOTAL BALACNE===
-
                                     Text(
-                                        'TOTAL AMOUNT: ${((double.parse(_loanPercent.text) / 100) * double.parse(_loanAmt.text)) + double.parse(_loanAmt.text)}'),
+                                        'TOTAL AMOUNT: $_totalAmt'),
 
                                     //
                                   ],
                                 ),
                               ),
-                              actions: const [
+                              actions:[
                                 //=================== CONFIMRATION BUTTON
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    //reference
+                                    Reference referenceRoot = FirebaseStorage.instance.ref();
+                                    Reference referenceDIRImages = referenceRoot.child('images');
+
+                                    //Create a reference
+                                    Reference referenceImageToUpload = referenceDIRImages.child('${file?.name}');
+
+                                    // TODO: GENERATE QR FOR CUSTOMER AND UPLOAD
+                                    // ADD ALSO ANIMATION FOR LOADING
+                                    // SCAN QR TO USERS PAGE
+                                    // USER PAGE NEED TO HAVE SELECTION OF UTANGS
+                                    // AFTER SELECTING GO TO PAGE
+                                    // TRANSACTIONS AND SHOWDIALOG
+
+                                    
+                                    // =================================================================================
+
+                                    //Store File
+                                    try{
+                                      await referenceImageToUpload.putFile(File(file!.path));
+                                      //get download url
+                                      imageUrl = await referenceImageToUpload.getDownloadURL();
+                                      debugPrint('This is the link-: $imageUrl');
+
+                                      //put into database
+
+                                      // get user id of employee
+                                      final FirebaseAuth auth =  FirebaseAuth.instance; 
+                                      final User? user = auth.currentUser;
+
+                                      //Pass Data to database
+                                     
+                                      DocumentReference employee = FirebaseFirestore.instance.collection('employee').doc(user?.uid);
+                                      DocumentReference customer = await employee.collection('customers').add({
+                                        "PicID": imageUrl,
+                                        "Name": _Name.text,
+                                        "Birthday": _BDate.text,
+                                        "Address": _Address.text,
+                                        "Phone No.": _PhoneNo.text,
+                                      });
+
+                                      await customer.collection('loans').add({
+                                        "Loan Amount": _loanAmt.text,
+                                        "Loan Percent": _loanPercent.text,
+                                        "Total Loaned Amount": _totalAmt,
+                                      });
+                                    // ignore: empty_catches
+                                    }catch(e){
+                                      
+                                    }
+                                    
+
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(context);
+                                    
+                                  }, 
+                                  child: const Text('CONFIRM'))
                               ],
                             ),
                           );

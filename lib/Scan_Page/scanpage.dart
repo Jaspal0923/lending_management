@@ -42,10 +42,7 @@ class _ScanPageState extends State<ScanPage> {
         children: [
           Expanded(
             flex: 5,
-            child: QRView(
-              key: _qrKey,
-              onQRViewCreated: _onQRViewCreated,
-            ),
+            child: _buildQRView(context),
           ),
           Expanded(
             flex: 1,
@@ -59,14 +56,29 @@ class _ScanPageState extends State<ScanPage> {
       ),
     );
   }
+  Widget _buildQRView(BuildContext context){
+    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150 : 300;
 
+   //
+   return QRView(
+    key: _qrKey,
+    onQRViewCreated: _onQRViewCreated,
+    overlay: QrScannerOverlayShape(
+      borderColor: Colors.red,
+      borderRadius: 10,
+      borderLength: 30,
+      borderWidth: 10,
+    ),
+    ); 
+  }
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         _qrText = scanData;
-        // Show a dialog when a QR code is scanned
-        _showQRDialog(scanData.code!);
+        //_showQRDialog(scanData.code!);
+        //When scan get the id data and put it in the next page
+        Navigator.of(context).pushReplacementNamed('/userPage');
       });
     });
     controller.pauseCamera();
