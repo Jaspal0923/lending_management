@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lending_management/Add_Page/add_textFields.dart';
 import 'package:intl/intl.dart';
 
@@ -33,11 +34,11 @@ class _AddPageState extends State<AddPage> {
   var formkey = GlobalKey<FormState>();
 
   //========================================== METHODS
-  bool isNumber(String text){
-    try{
+  bool isNumber(String text) {
+    try {
       double.parse(text);
       return true;
-    }catch(e){
+    } catch (e) {
       return false;
     }
   }
@@ -70,13 +71,28 @@ class _AddPageState extends State<AddPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // IMAGE CONTAINER
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.amber,
+                GestureDetector(
+                  onTap: () {
+                    ImagePicker imagePicker = ImagePicker();
+                    imagePicker.pickImage(source: ImageSource.gallery);
+                  },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.amber,
+                    ),
+                    width: double.infinity,
+                    height: 150,
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.image,
+                          size: 50,
+                        ),
+                        Text('Add Image'),
+                      ],
+                    ),
                   ),
-                  width: double.infinity,
-                  height: 150,
-                  child: const Center(child: Text('INSERT IMAGE')),
                 ),
 
                 //====================================================================== USER'S DETAIL
@@ -248,8 +264,8 @@ class _AddPageState extends State<AddPage> {
                   child: GestureDetector(
                     onTap: () {
                       if (formkey.currentState!.validate()) {
-
-                        if(isNumber(_loanAmt.text) && isNumber(_loanPercent.text)){
+                        if (isNumber(_loanAmt.text) &&
+                            isNumber(_loanPercent.text)) {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
@@ -265,9 +281,9 @@ class _AddPageState extends State<AddPage> {
                                 width: 400,
                                 child: Column(
                                   children: [
-                                    
                                     Text('LOAN AMOUNT: ${_loanAmt.text}\n'),
-                                    Text('INTEREST RATE: ${_loanPercent.text}\n'),
+                                    Text(
+                                        'INTEREST RATE: ${_loanPercent.text}\n'),
 
                                     //===CALCULATION FOR TOTAL BALACNE===
 
@@ -283,16 +299,16 @@ class _AddPageState extends State<AddPage> {
                               ],
                             ),
                           );
-                        }else{
+                        } else {
                           showDialog(
-                            context: context, 
-                            builder: (context)=>const AlertDialog(
-                              title: Center(child: Text('Loan Amount and Interest Must be a number')),
-                            )
-                          );
+                              context: context,
+                              builder: (context) => const AlertDialog(
+                                    title: Center(
+                                        child: Text(
+                                            'Loan Amount and Interest Must be a number')),
+                                  ));
                         }
-                          //==================== SHOW DIALOG FOR CONFIRMATION
-                          
+                        //==================== SHOW DIALOG FOR CONFIRMATION
                       }
                     },
                     onTapDown: (_) => setState(() => _isPressed = true),
