@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
         '/loginPage': (context) => const LoanPage(),
         '/addPage': (context) => const AddPage(),
         '/scanPage': (context) => const ScanPage(),
-        '/userPage': (context) => const UserPage(),
       },
       home: const AuthPage(),
       debugShowCheckedModeBanner: false,

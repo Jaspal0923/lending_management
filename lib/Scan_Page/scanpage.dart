@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:lending_management/User_Page/userpage.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class _ScanPageState extends State<ScanPage> {
 
   QRViewController? controller;
   Barcode? _qrText;
+
 
   @override
   void initState() {
@@ -36,7 +38,7 @@ class _ScanPageState extends State<ScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QR Code Scanner'),
+        title: const Text('QR Code Scanner'),
       ),
       body: Column(
         children: [
@@ -49,7 +51,7 @@ class _ScanPageState extends State<ScanPage> {
             child: Center(
               child: (_qrText != null)
                   ? Text('Barcode Type: ${_qrText?.code}')
-                  : Text('Scan a code'),
+                  : const Text('Scan a code'),
             ),
           ),
         ],
@@ -57,7 +59,7 @@ class _ScanPageState extends State<ScanPage> {
     );
   }
   Widget _buildQRView(BuildContext context){
-    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150 : 300;
+    //var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150 : 300;
 
    //
    return QRView(
@@ -71,33 +73,39 @@ class _ScanPageState extends State<ScanPage> {
     ),
     ); 
   }
+
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         _qrText = scanData;
+        String? scannedCode = _qrText?.code;
         //_showQRDialog(scanData.code!);
-        //When scan get the id data and put it in the next page
-        Navigator.of(context).pushReplacementNamed('/userPage');
+        //TODO: SCAN IF THE USER IS IN THE DATABASE
+        //IF USER IS NOT IN THE DATABASE USE DIALOG TO SHOW USER IS NOT FOUND
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> UserPage(docID: '$scannedCode')));
+
       });
     });
     controller.pauseCamera();
     controller.resumeCamera();
   }
 
+  // TODO: USE DIALOG TO TELL USER NOT FOUND
+  // ignore: unused_element
   void _showQRDialog(String data) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('QR Code Scanned'),
+          title: const Text('QR Code Scanned'),
           content: Text('Data: $data'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

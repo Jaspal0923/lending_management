@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lending_management/Add_Page/add_textFields.dart';
 import 'package:intl/intl.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -67,13 +69,34 @@ class _AddPageState extends State<AddPage> {
     }
   }
 
+ ProgressDialog? progressDialog;
+
+@override
+void initState() {
+  super.initState();
+  progressDialog = ProgressDialog(context);
+  progressDialog?.style(
+    message: 'Uploading...', // Set your own message
+    borderRadius: 10.0,
+    backgroundColor: Colors.white,
+    progressWidget: CircularProgressIndicator(),
+    elevation: 10.0,
+    insetAnimCurve: Curves.easeInOut,
+    messageTextStyle: const TextStyle(
+      color: Colors.black,
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
+    ),
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: ListView(children: [
         Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Form(
             key: formkey,
             child: Column(
@@ -85,7 +108,9 @@ class _AddPageState extends State<AddPage> {
                     ImagePicker imagePicker = ImagePicker();
                     file = await imagePicker.pickImage(source: ImageSource.camera);
                     setState(() {
-                      pic=false;
+                      if(file!=null){
+                        pic = false;
+                      }
                     });
 
                   },
@@ -327,38 +352,58 @@ class _AddPageState extends State<AddPage> {
                                 //=================== CONFIMRATION BUTTON
                                 ElevatedButton(
                                   onPressed: () async {
-                                    //reference
+                                     progressDialog?.show();//loading animation
+                                     
+                                    //reference to upload the file in a certain folder
                                     Reference referenceRoot = FirebaseStorage.instance.ref();
                                     Reference referenceDIRImages = referenceRoot.child('images');
 
                                     //Create a reference
                                     Reference referenceImageToUpload = referenceDIRImages.child('${file?.name}');
 
-                                    // TODO: GENERATE QR FOR CUSTOMER AND UPLOAD
-                                    // ADD ALSO ANIMATION FOR LOADING
+                                    // TODO: GENERATE QR FOR CUSTOMER AND UPLOAD AND DOWNLOAD
                                     // SCAN QR TO USERS PAGE
                                     // USER PAGE NEED TO HAVE SELECTION OF UTANGS
                                     // AFTER SELECTING GO TO PAGE
-                                    // TRANSACTIONS AND SHOWDIALOG
+                                    // TRANSACTIONS -> TRANSACTION PAGES [ EDIT | DELETE ]
+                                    // USER PAGE SELECT FUNCTION/BUTTON TO SHOWDIALOG
+
+                                    //IF POSSIBLE
+                                    //== FIREBASE -> DATABASE ==
+                                    //== EMPLOYEE -> EARNINGS PER DAY ==
+
+                                    //CREATE ADMIN PAGE
+                                      //SHOW TOTAL INCOME OF ALL EMPLOYEE
+                                        //GET SUB-COLLECTION OF EARNINGS PER DAY FOR THE EMPLOYEE
+                                        
+                                      //GET TOTAL NUMBER OF CUSTOMERS OF ALL EMPLOYEE
+                                        //GET SUB-COLLECTION OF EARNINGS PER DAY FOR THE EMPLOYEE
+                                      
+                                      //SHOW ALL EMPLOYEE [ PAGE ] -> [ UPPER PART ]: EMPLOYEES DETAIL | [ CONTENT \ CENTER ]: LIST OF CUSTOMER
+                                      //SHOW ALL CUSTOMER [ PAGE ] -> SPECIFIC CUSTOMER DETAILS [ ANOTHER PAGE ]
 
                                     
                                     // =================================================================================
 
                                     //Store File
                                     try{
+                                      //upload image
                                       await referenceImageToUpload.putFile(File(file!.path));
+
                                       //get download url
                                       imageUrl = await referenceImageToUpload.getDownloadURL();
-                                      debugPrint('This is the link-: $imageUrl');
 
                                       //put into database
+                                      //=================================================
 
-                                      // get user id of employee
+                                      // get current employee userid
                                       final FirebaseAuth auth =  FirebaseAuth.instance; 
                                       final User? user = auth.currentUser;
 
-                                      //Pass Data to database
-                                     
+
+                                      // Pass Data to database
+                                      // Getting the reference or database to input the data
+                                      // 
                                       DocumentReference employee = FirebaseFirestore.instance.collection('employee').doc(user?.uid);
                                       DocumentReference customer = await employee.collection('customers').add({
                                         "PicID": imageUrl,
@@ -366,16 +411,23 @@ class _AddPageState extends State<AddPage> {
                                         "Birthday": _BDate.text,
                                         "Address": _Address.text,
                                         "Phone No.": _PhoneNo.text,
+                                        "eid": user?.uid,
                                       });
 
                                       await customer.collection('loans').add({
                                         "Loan Amount": _loanAmt.text,
                                         "Loan Percent": _loanPercent.text,
                                         "Total Loaned Amount": _totalAmt,
+                                        "cid":'',//TODO: GET CUSTOMERS ID HERE
                                       });
+                                  
+                                      //GENERATING QR CODE TO OTHER PAGE
+
                                     // ignore: empty_catches
                                     }catch(e){
                                       
+                                    }finally {
+                                      progressDialog?.hide();
                                     }
                                     
 
