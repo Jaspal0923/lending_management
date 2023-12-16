@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lending_management/Add_Page/add_textFields.dart';
 import 'package:intl/intl.dart';
+import 'package:lending_management/Add_Page/generateQR.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
 
 
@@ -353,15 +354,14 @@ void initState() {
                                 ElevatedButton(
                                   onPressed: () async {
                                      progressDialog?.show();//loading animation
-                                     
+
                                     //reference to upload the file in a certain folder
                                     Reference referenceRoot = FirebaseStorage.instance.ref();
-                                    Reference referenceDIRImages = referenceRoot.child('images');
+                                    Reference referenceDIRImages = referenceRoot.child('imagesID');
 
                                     //Create a reference
                                     Reference referenceImageToUpload = referenceDIRImages.child('${file?.name}');
 
-                                    // TODO: GENERATE QR FOR CUSTOMER AND UPLOAD AND DOWNLOAD
                                     // SCAN QR TO USERS PAGE
                                     // USER PAGE NEED TO HAVE SELECTION OF UTANGS
                                     // AFTER SELECTING GO TO PAGE
@@ -384,6 +384,8 @@ void initState() {
 
                                     
                                     // =================================================================================
+                                    String code='';
+                                    String name='';
 
                                     //Store File
                                     try{
@@ -405,6 +407,8 @@ void initState() {
                                       // Getting the reference or database to input the data
                                       // 
                                       DocumentReference employee = FirebaseFirestore.instance.collection('employee').doc(user?.uid);
+
+                                      String custID;
                                       DocumentReference customer = await employee.collection('customers').add({
                                         "PicID": imageUrl,
                                         "Name": _Name.text,
@@ -412,28 +416,48 @@ void initState() {
                                         "Address": _Address.text,
                                         "Phone No.": _PhoneNo.text,
                                         "eid": user?.uid,
+                                        "cid":'',
                                       });
+                                      custID = customer.id;
+                                      await employee.collection('customers').doc(custID).update({"cid":custID});
+                                      
 
-                                      await customer.collection('loans').add({
+                                      String loanID;
+                                      DocumentReference loan = await customer.collection('loans').add({
                                         "Loan Amount": _loanAmt.text,
                                         "Loan Percent": _loanPercent.text,
                                         "Total Loaned Amount": _totalAmt,
-                                        "cid":'',//TODO: GET CUSTOMERS ID HERE
+                                        "Loan Balance":_totalAmt,
+                                        "Paid Amount": 0,
+                                        "cid": custID,
+                                        "LoanID":'',
                                       });
-                                  
-                                      //GENERATING QR CODE TO OTHER PAGE
+                                      loanID = loan.id;
 
+                                      await customer.collection('loans').doc(loanID).update({"LoanID":loanID});
+
+
+                                      code = customer.id;
+
+                                      //get collection
+                                      QuerySnapshot customerQuery = (await employee.collection('customers').where(FieldPath.documentId, isEqualTo: code).get());
+                                      if (customerQuery.size > 0) {
+                                        Map<String, dynamic>? customerData = customerQuery.docs.first.data() as Map<String, dynamic>?;
+                                        if (customerData != null && customerData.containsKey('Name')) {
+                                          name = customerData['Name'];
+                                        }
+                                      }
+                                                                          
+                                      
                                     // ignore: empty_catches
                                     }catch(e){
                                       
                                     }finally {
                                       progressDialog?.hide();
                                     }
-                                    
-
                                     // ignore: use_build_context_synchronously
-                                    Navigator.pop(context);
-                                    
+                                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>GenerateQr(code:code, name: name,)));
+
                                   }, 
                                   child: const Text('CONFIRM'))
                               ],
